@@ -23,12 +23,12 @@ def text_node_to_html_node(text_node: TextNode) -> HTMLNode:
             raise ValueError("invalid TextType used in TextNode")
 
 
-
 def main():
     text = "This is a text node"
     url = "https://www.boot.dev"
     node = TextNode(text, TextType.BOLD, url)
     print(node)
+
 
 if __name__ == "__main__":
     main()

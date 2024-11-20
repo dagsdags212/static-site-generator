@@ -4,11 +4,14 @@ from typing import Optional, Iterable
 
 class HTMLNode:
     """Base class for reprenting HTML elements."""
-    def __init__(self, 
-                 tag: Optional[str]=None, 
-                 value: Optional[str]=None, 
-                 children: Optional[Iterable[HTMLNode]]=None,
-                 props: Optional[dict[str, str]]=None):
+
+    def __init__(
+        self,
+        tag: Optional[str] = None,
+        value: Optional[str] = None,
+        children: Optional[Iterable[HTMLNode]] = None,
+        props: Optional[dict[str, str]] = None,
+    ):
         self.tag = tag
         self.value = value
         self.children = children
@@ -30,7 +33,10 @@ class HTMLNode:
 
 class LeafNode(HTMLNode):
     """HTMLNode with no children."""
-    def __init__(self, tag: Optional[str], value: str, props: Optional[dict[str, str]]=None) -> None:
+
+    def __init__(
+        self, tag: Optional[str], value: str, props: Optional[dict[str, str]] = None
+    ) -> None:
         super().__init__(tag, value, None, props)
 
     def to_html(self) -> str:
@@ -44,10 +50,12 @@ class LeafNode(HTMLNode):
 
 
 class ParentNode(HTMLNode):
-    def __init__(self, 
-                 tag: str, 
-                 children: Iterable[HTMLNode], 
-                 props: Optional[dict[str,str]]=None):
+    def __init__(
+        self,
+        tag: str,
+        children: Iterable[HTMLNode],
+        props: Optional[dict[str, str]] = None,
+    ):
         super().__init__(tag, None, children, props)
 
     def to_html(self) -> str:
