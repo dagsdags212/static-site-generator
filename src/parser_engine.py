@@ -76,3 +76,71 @@ def extract_markdown_links(text: str) -> list[tuple[str, str]]:
     """
     link_re = r"(?<!!)\[([\w\s]*)\]\(([\w\s:\/\.]+)\)"
     return re.findall(link_re, text)
+
+
+def split_nodes_image(old_nodes: list[TextNode]) -> list[list[TextNode]]:
+    """Splits a list of TextNode objects into its text and image components
+
+    A Markdown-formatted image contains two data attributes: (1) an alt-text
+    which is rendered when the image failed to load and a (2) url which point
+    to where the image is stored
+
+    Parameters
+    ----------
+    old_nodes : list[TextNode]
+        A list of TextNode objects containing markdown-formatted images
+
+    Returns
+    -------
+    list[TextNode]
+        A new list of TextNode objects where the alt-text and url components
+        have been separated
+    """
+
+    def split_single_node_image(node: TextNode) -> list[TextNode]:
+        """A helper function that operates on a single node."""
+
+        new_nodes = []
+        img_re = r"(?<=!)\[([^\[\]]*)\]\((.*?)\)"
+        tokens = re.split(img_re, node.text)
+        for i in range(0, len(tokens) - 1, 3):
+            text, caption, url = tokens[i : i + 3]
+            text = text.replace("!", "")
+            new_nodes.append(TextNode(text, TextType.TEXT))
+            new_nodes.append(TextNode(caption, TextType.IMAGE, url))
+        return new_nodes
+
+    return list(map(split_single_node_image, old_nodes))
+
+
+def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
+    """Splits a list of TextNode objects into its text and link components
+
+    A Markdown-formatted link contains two data attributes: a highlighted
+    text and a url. When clicked, the highlighted text redirects to the url
+
+    Parameters
+    ----------
+    old_nodes : list[TextNode]
+        A list of TextNode objects containing markdown-formatted links
+
+    Returns
+    -------
+    list[TextNode]
+        A new list of TextNode objects where the fig-cap and url components
+        have been separated
+    """
+
+    def split_single_node_link(node: TextNode) -> list[TextNode]:
+        """A helper function that operates on a single node."""
+
+        new_nodes = []
+        link_re = r"\[([^\[\]]*)\]\((.*?)\)"
+        tokens = re.split(link_re, node.text)
+        for i in range(0, len(tokens) - 1, 3):
+            text, alt, url = tokens[i : i + 3]
+            new_nodes.append(TextNode(text, TextType.TEXT))
+            new_nodes.append(TextNode(alt, TextType.LINK, url))
+        return new_nodes
+
+    return list(map(split_single_node_link, old_nodes))
