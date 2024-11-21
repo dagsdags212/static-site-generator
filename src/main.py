@@ -3,7 +3,19 @@ from textnode import TextNode, TextType
 
 
 def text_node_to_html_node(text_node: TextNode) -> HTMLNode:
-    """Converts a TextNode instance into an HTML-formatted node."""
+    """Converts a TextNode into an HTMLNode by matching the former's
+    text_type to the latter's tag
+
+    Parameters
+    ----------
+    text_node : TextNode
+        TextNode object to be converted
+
+    Returns
+    -------
+    HTMLNode
+        HTMLNode that contains a tag, value, and optional url
+    """
     match text_node.text_type:
         case TextType.TEXT:
             return LeafNode(tag=None, value=text_node.text)

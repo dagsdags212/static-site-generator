@@ -3,7 +3,19 @@ from typing import Optional, Iterable
 
 
 class HTMLNode:
-    """Base class for reprenting HTML elements."""
+    """Base class for reprenting HTML elements
+
+    Attributes
+    ----------
+    tag : str, optional
+        An HTML tag that is prefixed and suffixed to the text content
+    value : str, optional
+        Text content of an HTML node
+    children : Iterable[HTMLNode], optional
+        All HTML nodes contained within the current node
+    props : dict[str,str], optional
+        Attributes of an HTML node used for passing additional metadata
+    """
 
     def __init__(
         self,
@@ -21,18 +33,36 @@ class HTMLNode:
         raise NotImplemented
 
     def props_to_html(self) -> str:
-        """Returns a string that represents HTML attributes of a node."""
+        """Converts are dictionary into key-value attributes.
+
+        Returns
+        -------
+        str
+            an HTML string with attributes included in tags
+        """
+
         if self.props:
             s = "".join([f'{attr}="{val}"' for attr, val in self.props.items()])
             return " " + s
         return ""
 
     def __repr__(self) -> str:
+        """Pretty prints the attributes of the HTMLNode class."""
         return f"HTMLNode(tag={self.tag}, value={self.value}, children={self.children}, props={self.props})"
 
 
 class LeafNode(HTMLNode):
-    """HTMLNode with no children."""
+    """An HTMLNode that has no children
+
+    Attributes
+    ----------
+    tag : str, optional
+        An HTML tag that is prefixed and suffixed to the text content
+    value : str, optional
+        Text content of an HTML node
+    props : dict[str,str], optional
+        Attributes of an HTML node used for passing additional metadata
+    """
 
     def __init__(
         self, tag: Optional[str], value: str, props: Optional[dict[str, str]] = None
@@ -50,6 +80,20 @@ class LeafNode(HTMLNode):
 
 
 class ParentNode(HTMLNode):
+    """An HTMLNode that has at least one child node
+
+    Attributes
+    ----------
+    tag : str, optional
+        An HTML tag that is prefixed and suffixed to the text content
+    value : str, optional
+        Text content of an HTML node
+    children : Iterable[HTMLNode]
+        All HTML nodes contained within the current node
+    props : dict[str,str], optional
+        Attributes of an HTML node used for passing additional metadata
+    """
+
     def __init__(
         self,
         tag: str,
@@ -59,6 +103,14 @@ class ParentNode(HTMLNode):
         super().__init__(tag, None, children, props)
 
     def to_html(self) -> str:
+        """Recursively renders the HTML string of children nodes and concatenates
+        them into a single string
+
+        Returns
+        -------
+        str
+            An HTML string containing metadata from the ParentNode and all children nodes
+        """
         if self.tag is None:
             raise ValueError("missing tag")
         if len(self.children) == 0:
